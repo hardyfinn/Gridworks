@@ -1,0 +1,23 @@
+{
+  "slug": "Gridworks",
+  "name": "Gridworks",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "brand": "Haer",
+  "author": "Haer",
+  "authorEmail": "",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "https://github.com/hardyfinn/Gridworks",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": [
+    {
+      "slug": "GridDrums",
+      "name": "GridDrums",
+      "description": "Six-track, sixteen-step trigger sequencer played from a monome grid (via serialosc) or the on-screen grid, with 16 pattern slots that change at the next bar",
+      "tags": ["Sequencer", "Drum", "Hardware clone"]
+    }
+  ]
+}

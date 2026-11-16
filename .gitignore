@@ -1,0 +1,8 @@
+build/
+dist/
+plugin.so
+plugin.dylib
+plugin.dll
+test/engine_test
+preview.html
+__pycache__/
