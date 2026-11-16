@@ -3,7 +3,7 @@
 // 16 pattern slots; a new slot starts at the next bar.
 #include "plugin.hpp"
 #include "GridDrumsCore.hpp"
-#include "grid/GridHub.hpp"
+#include "grid/GridModule.hpp"
 
 using namespace gridworks;
 
@@ -30,21 +30,13 @@ static const NVGcolor TRACK_COL[6] = {
 	nvgRGB(0x6C, 0xC3, 0xB5), nvgRGB(0x8F, 0xA8, 0xE8), nvgRGB(0xC9, 0x8B, 0xD9),
 };
 
-struct KeyEvent {
-	int8_t x, y, down, fromScreen;
-};
-
-struct GridDrums : Module, GridClient {
+struct GridDrums : Module, GridModule {
 	enum ParamId { PARAMS_LEN };
 	enum InputId { CLOCK_INPUT, RESET_INPUT, SLOT_INPUT, INPUTS_LEN };
 	enum OutputId { ENUMS(TRIG_OUTPUT, 6), BAR_OUTPUT, OUTPUTS_LEN };
 	enum LightId { ENUMS(GRID_LIGHT, 2), LIGHTS_LEN };
 
 	GridDrumsCore core;
-
-	// key presses arrive from two other threads; each has its own one-way queue
-	dsp::RingBuffer<KeyEvent, 256> gridQueue;    // network thread -> audio
-	dsp::RingBuffer<KeyEvent, 256> screenQueue;  // UI thread -> audio
 
 	dsp::SchmittTrigger clockTrig, resetTrig;
 	dsp::PulseGenerator trigPulse[6], barPulse;
@@ -58,11 +50,6 @@ struct GridDrums : Module, GridClient {
 	bool gateMode = false;          // false = short triggers, true = gates as long as the clock pulse
 	bool changeImmediately = false; // false = new slot waits for the next bar
 
-	// grid connection
-	std::string wantedId;           // the grid this module should use (saved with the patch)
-	bool autoConnect = true;        // take the first free grid when added
-	std::atomic<bool> releaseGrid{false};
-
 	GridDrums() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configInput(CLOCK_INPUT, "Clock (one pulse per step)");
@@ -72,15 +59,6 @@ struct GridDrums : Module, GridClient {
 			configOutput(TRIG_OUTPUT + t, string::f("Track %d trigger", t + 1));
 		configOutput(BAR_OUTPUT, "Bar (trigger on step 1)");
 		configLight(GRID_LIGHT, "Grid connected");
-	}
-
-	~GridDrums() {
-		GridHub::get().sendAllOff(this);
-		GridHub::get().disconnect(this);
-	}
-
-	void gridKey(int x, int y, int state) override {
-		if (!gridQueue.full()) gridQueue.push(KeyEvent{(int8_t) x, (int8_t) y, (int8_t) (state ? 1 : 0), 0});
 	}
 
 	bool clockRunning() const {
@@ -106,7 +84,7 @@ struct GridDrums : Module, GridClient {
 
 	void process(const ProcessArgs& args) override {
 		bool immediate = changeImmediately || !clockRunning();
-		KeyEvent ev;
+		GridKeyEvent ev;
 		while (!gridQueue.empty()) {
 			ev = gridQueue.shift();
 			core.key(ev.x, ev.y, ev.down, false, immediate);
@@ -173,8 +151,7 @@ struct GridDrums : Module, GridClient {
 		json_object_set_new(root, "slot", json_integer(core.queued >= 0 ? core.queued : core.cur));
 		json_object_set_new(root, "gateMode", json_boolean(gateMode));
 		json_object_set_new(root, "changeImmediately", json_boolean(changeImmediately));
-		std::string id = GridHub::get().ownedId(this);
-		json_object_set_new(root, "grid", json_string(id.empty() ? wantedId.c_str() : id.c_str()));
+		gridToJson(root);
 		return root;
 	}
 
@@ -194,11 +171,7 @@ struct GridDrums : Module, GridClient {
 		if (json_t* j = json_object_get(root, "slot")) core.requestSlot(clamp((int) json_integer_value(j), 0, 15), true);
 		if (json_t* j = json_object_get(root, "gateMode")) gateMode = json_is_true(j);
 		if (json_t* j = json_object_get(root, "changeImmediately")) changeImmediately = json_is_true(j);
-		if (json_t* j = json_object_get(root, "grid")) {
-			wantedId = json_string_value(j) ? json_string_value(j) : "";
-			// a saved patch remembers its grid; don't grab some other free grid instead
-			autoConnect = false;
-		}
+		gridFromJson(root);
 	}
 };
 
@@ -224,8 +197,7 @@ struct GridDisplay : Widget {
 		if (e.button == GLFW_MOUSE_BUTTON_LEFT && module) {
 			int x, y;
 			if (cellAt(e.pos, x, y)) {
-				if (e.action == GLFW_PRESS && !module->screenQueue.full())
-					module->screenQueue.push(KeyEvent{(int8_t) x, (int8_t) y, 1, 1});
+				if (e.action == GLFW_PRESS) module->screenKey(x, y, true);
 				e.consume(this);
 				return;
 			}
@@ -280,13 +252,7 @@ struct GridDisplay : Widget {
 		nvgFillColor(args.vg, nvgRGB(0xEC, 0xE6, 0xD8));
 		nvgText(args.vg, -14.f * s, ty, left.c_str(), NULL);
 
-		std::string right = "NO GRID";
-		if (module) {
-			GridDevice d;
-			if (GridHub::get().ownedDevice(module, d)) right = "GRID " + d.id;
-			else if (!module->wantedId.empty()) right = "GRID OFF";
-			else if (!GridHub::get().serialoscSeen()) right = "NO SERIALOSC";
-		}
+		std::string right = module ? module->gridStatus() : "NO GRID";
 		nvgTextAlign(args.vg, NVG_ALIGN_RIGHT | NVG_ALIGN_BASELINE);
 		nvgFillColor(args.vg, nvgRGB(0x9A, 0x94, 0x88));
 		nvgText(args.vg, 16 * CELL * s, ty, right.c_str(), NULL);
@@ -294,11 +260,7 @@ struct GridDisplay : Widget {
 };
 
 struct GridDrumsWidget : ModuleWidget {
-	uint8_t sent[8][16];
-	bool sentValid = false;
-	double lastSend = 0.0, lastConnectTry = -10.0;
-	std::string lastOwned;
-	bool askedHub = false;
+	GridLinkUI link;
 
 	GridDrumsWidget(GridDrums* module) {
 		setModule(module);
@@ -328,81 +290,19 @@ struct GridDrumsWidget : ModuleWidget {
 		ModuleWidget::step();
 		GridDrums* m = dynamic_cast<GridDrums*>(module);
 		if (!m) return;
-		GridHub& hub = GridHub::get();
-		double now = system::getTime();
-
-		if (m->releaseGrid.exchange(false)) {
-			hub.sendAllOff(m);
-			hub.disconnect(m);
-			m->wantedId = "";
-			m->autoConnect = false;
-		}
-
-		// Connect once: to the grid saved with the patch, or (new module) to the first free
-		// grid, checking each second until one turns up. If the grid is unplugged, GridHub
-		// remembers it's ours and takes it back when it returns. If another module takes it
-		// later we don't grab it back, so two modules never fight over one grid.
-		if (!askedHub && now - lastConnectTry > 1.0) {
-			lastConnectTry = now;
-			if (m->wantedId.empty() && m->autoConnect) m->wantedId = hub.firstFreeId();
-			if (!m->wantedId.empty()) {
-				hub.connect(m, m->wantedId);
-				askedHub = true;
-			}
-		}
-		std::string owned = hub.ownedId(m);
-		if (owned != lastOwned) sentValid = false;
-		lastOwned = owned;
-
-		GridDevice dev;
-		bool live = hub.ownedDevice(m, dev);
-		m->lights[GridDrums::GRID_LIGHT + 0].setBrightness(live ? 1.f : 0.f);
-		m->lights[GridDrums::GRID_LIGHT + 1].setBrightness(!live && !m->wantedId.empty() ? 0.6f : 0.f);
-		if (!live) return;
-
-		// Send the LEDs when they change (at most ~60 times a second), plus a refresh every second.
 		bool flash[6];
 		for (int t = 0; t < 6; t++) flash[t] = m->flashTime[t] > 0.f;
-		bool blink = std::fmod(now, 0.5) < 0.25;
 		uint8_t lv[8][16];
-		m->core.levels(lv, blink, flash);
-		bool changed = !sentValid || std::memcmp(lv, sent, sizeof(lv)) != 0;
-		if ((changed && now - lastSend > 1.0 / 60.0) || now - lastSend > 1.0) {
-			for (int q = 0; q < 2 && q * 8 < dev.width; q++) {
-				uint8_t block[64];
-				for (int r = 0; r < 8; r++)
-					for (int k = 0; k < 8; k++) block[r * 8 + k] = lv[r][q * 8 + k];
-				hub.sendLevelMap(m, q * 8, 0, block);
-			}
-			std::memcpy(sent, lv, sizeof(lv));
-			sentValid = true;
-			lastSend = now;
-		}
+		m->core.levels(lv, std::fmod(system::getTime(), 0.5) < 0.25, flash);
+		bool live = link.update(m, lv);
+		m->lights[GridDrums::GRID_LIGHT + 0].setBrightness(live ? 1.f : 0.f);
+		m->lights[GridDrums::GRID_LIGHT + 1].setBrightness(!live && !m->wantedId.empty() ? 0.6f : 0.f);
 	}
 
 	void appendContextMenu(Menu* menu) override {
 		GridDrums* m = dynamic_cast<GridDrums*>(module);
 		if (!m) return;
-		GridHub& hub = GridHub::get();
-
-		menu->addChild(new MenuSeparator);
-		menu->addChild(createMenuLabel("monome grid"));
-		std::vector<GridDevice> devs = hub.devices();
-		std::string owned = hub.ownedId(m);
-		if (devs.empty()) {
-			menu->addChild(createMenuLabel(hub.serialoscSeen() ? "No grid plugged in" : "serialosc not found: is it installed and running?"));
-		}
-		for (const GridDevice& d : devs) {
-			std::string id = d.id;
-			menu->addChild(createCheckMenuItem(d.type + " (" + d.id + ")", "",
-				[=]() { return GridHub::get().ownedId(m) == id; },
-				[=]() {
-					m->wantedId = id;
-					GridHub::get().connect(m, id);
-				}));
-		}
-		menu->addChild(createMenuItem("Let go of the grid", "", [=]() { m->releaseGrid = true; }, owned.empty()));
-		menu->addChild(createMenuItem("Look for grids again", "", [=]() { GridHub::get().rescan(); }));
+		GridLinkUI::appendMenu(menu, m);
 
 		menu->addChild(new MenuSeparator);
 		menu->addChild(createBoolPtrMenuItem("Gate outputs (follow clock pulse width)", "", &m->gateMode));

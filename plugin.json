@@ -1,7 +1,7 @@
 {
   "slug": "Gridworks",
   "name": "Gridworks",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "license": "GPL-3.0-or-later",
   "brand": "Haer",
   "author": "Haer",
@@ -17,7 +17,21 @@
       "slug": "GridDrums",
       "name": "GridDrums",
       "description": "Six-track, sixteen-step trigger sequencer played from a monome grid (via serialosc) or the on-screen grid, with 16 pattern slots that change at the next bar",
-      "tags": ["Sequencer", "Drum", "Hardware clone"]
+      "tags": [
+        "Sequencer",
+        "Drum",
+        "Hardware clone"
+      ]
+    },
+    {
+      "slug": "LessConcepts",
+      "name": "LessConcepts",
+      "description": "Cellular-automaton melody sequencer for two voices, after the norns script less concepts by dan derks and linus schrab: monome grid control, 16 snapshots with cycling, CV and gate outputs",
+      "tags": [
+        "Sequencer",
+        "Random",
+        "Quantizer"
+      ]
     }
   ]
 }
