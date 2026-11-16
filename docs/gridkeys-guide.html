@@ -1,0 +1,58 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@page{size:A4;margin:15mm}
+body{font-family:Inter,Helvetica,Arial,sans-serif;color:#222;font-size:10pt;line-height:1.42}
+h1{font-size:22pt;margin:0 0 1mm}h2{font-size:12.5pt;margin:5mm 0 2mm;border-bottom:1px solid #ccc;padding-bottom:1mm}
+.sub{color:#777;margin-bottom:4mm}.wrap{display:flex;gap:6mm}.wrap img{width:92mm;border-radius:2mm;align-self:flex-start}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #e3e3e3;padding:1.2mm 2mm;text-align:left;vertical-align:top}th{background:#eef1f3}
+li{margin-bottom:1mm}.tip{background:#eef1f3;padding:3mm 4mm;border-radius:2mm;margin-top:3mm}
+.pb{page-break-before:always}
+</style></head><body>
+<h1>GridKeys</h1><div class="sub">Gridworks plugin for VCV Rack 2 · a Push-style note keyboard for the monome grid · by Hær</div>
+<div class="wrap"><img src="../gridkeys-preview.png"><div>
+<h2 style="margin-top:0">The idea</h2>
+<p>The grid becomes a keyboard. The <b>bottom-left key</b> is the root note in the starting octave. Notes rise one step per key to the right, and each row starts a little higher than the row below (a 4th by default, just like Ableton Push).</p>
+<p>Because a row is wider than that jump, rows overlap, so <b>the same note appears in several places</b>. Every copy lights up when you play it, and you can reach a chord or a melody from whichever spot is closest.</p>
+<h2>Patch it up</h2>
+<ol><li><b>POLY V/OCT + POLY GATE</b> → a polyphonic synth (e.g. Buchla 259t), or any poly voice.</li>
+<li>Or use <b>MONO V/OCT + GATE</b> for a single voice. It follows the newest key you hold, with GLIDE.</li>
+<li>Set <b>ROOT</b>, <b>SCALE</b> and <b>OCTAVE</b>, then play.</li></ol>
+</div></div>
+
+<h2>Panel</h2>
+<table>
+<tr><td style="width:24%"><b>ROOT</b>, <b>SCALE</b></td><td>Root note C–B and one of Push's 26 scales (Major, Minor, Dorian … Spanish, Chromatic). The knob's tooltip shows the name. Root keys glow gold.</td></tr>
+<tr><td><b>OCTAVE</b></td><td>The octave of the bottom-left key (0–7, default 3, so C3). The grid's OCT +/− keys shift this up or down on top.</td></tr>
+<tr><td><b>WIDTH</b></td><td>How many columns are notes, from 4 to 16 (default 8). Narrow rows mean more repeats of each note and smaller hand shapes. At 16 the control column is gone and the whole grid is notes.</td></tr>
+<tr><td><b>ROW</b></td><td>How much higher each row starts: <b>4th</b> (Push default), <b>3rd</b>, <b>5th</b>, <b>octave</b>, or <b>sequential</b> (each row carries on where the row below ends, so no repeats). If the jump would be wider than the row, it's limited to the width so no notes get skipped; the status line then shows "=W".</td></tr>
+<tr><td><b>IN KEY / CHROM</b></td><td><b>In Key</b>: only scale notes, so you can't play a wrong note. <b>Chrom</b>: all 12 notes, with scale notes lit and the others dark (menu: dim instead of dark).</td></tr>
+<tr><td><b>PLAYS</b></td><td><b>Note</b>: one key, one note. <b>Triad</b> / <b>7th</b>: each key plays a chord built from the scale on that note (in C major, D gives D F A, or D F A C). In Chromatic mode, keys outside the scale still play a single note.</td></tr>
+<tr><td><b>STRUM</b></td><td>The gap between the notes of a chord key, 0–100 ms, from the bottom note up. 0 = all at once.</td></tr>
+<tr><td><b>GLIDE</b></td><td>Portamento on the mono output only (0–1 s).</td></tr>
+<tr><td><b>LATCH</b></td><td>Notes keep playing after you let go. The next key or chord you press replaces them. Turning latch off stops them.</td></tr>
+<tr><td><b>CHORD</b> in</td><td>Patch a poly V/OCT (from The Changes, a chord module or another keyboard). <b>Its notes become the scale</b>, with the lowest note as the root. The grid then only offers chord tones, and SCALE and ROOT are ignored while it's patched. The status line shows the chord.</td></tr>
+<tr><td><b>SHOW</b> in</td><td>Patch a poly V/OCT from a sequencer and its notes light up on the grid in teal (bright on the hardware), so you can follow along or play against it.</td></tr>
+<tr><td>Outputs</td><td><b>POLY V/OCT/GATE</b>: one channel per voice (8 by default, menu 1–16). The oldest note is replaced when you run out. <b>MONO V/OCT/GATE</b>: newest held note. Letting go falls back to the one you're still holding. <b>TRIG</b>: a short trigger for every new note, including each strummed one.</td></tr>
+</table>
+
+<h2>The grid</h2>
+<p>With WIDTH below 16, column 16 holds the controls. Columns between the note area and column 16 are unused and stay dark.</p>
+<table>
+<tr><th style="width:24%">Column 16, row</th><th>Key</th></tr>
+<tr><td>1 · 2</td><td><b>OCT +</b> / <b>OCT −</b>: shift the whole keyboard an octave. The key gets brighter the further you've shifted.</td></tr>
+<tr><td>3</td><td><b>LATCH</b> on/off (the same as the panel button).</td></tr>
+<tr><td>4</td><td><b>KEY/CHR</b>: switch between In Key and Chromatic.</td></tr>
+<tr><td>5</td><td><b>ROW</b>: step through 4th → 3rd → 5th → octave → sequential.</td></tr>
+<tr><td>6</td><td><b>PLAYS</b>: step through note → triad → 7th.</td></tr>
+<tr><td>8</td><td><b>SUSTAIN</b>, held like a pedal: notes you release keep sounding until you let go of this key.</td></tr>
+</table>
+<p><b>Lights:</b> bright = sounding (every copy of the note), gold on screen = root, dim = scale note, teal on screen = SHOW input. The panel's grid shows the note names and works with the mouse. Hold the button down to hold a note.</p>
+
+<h2>Right-click menu</h2>
+<ul><li>Pick the grid, let go of it, look for grids again. serialosc must be running, the same as for the monome-rack modules. Each Gridworks module uses its own grid, so to play GridKeys and GridDrums together you need two grids.</li>
+<li><b>Polyphony</b>: how many poly channels (1–16, default 8).</li>
+<li><b>Dimly light notes outside the scale</b> in Chromatic mode.</li>
+<li><b>Reset the grid's octave shift.</b></li></ul>
+
+<div class="tip"><b>Ideas.</b> (1) Patch <b>The Changes</b> poly out into <b>CHORD</b>: the grid now only offers the current chord's notes, so every key fits the harmony. (2) Put <b>PLAYS</b> on Triad with <b>STRUM</b> at 30–60 ms and <b>LATCH</b> on for arpeggio-like pads you change with one finger. (3) Feed LessConcepts' V/OCT into <b>SHOW</b> and play answers to its melody. (4) Use <b>TRIG</b> to fire an envelope or a drum each time you play.</div>
+<p style="color:#777;margin-top:4mm">All settings, the octave shift, menu choices and the chosen grid are saved with the patch. Made for 16×8 grids such as the grid 128.</p>
+</body></html>

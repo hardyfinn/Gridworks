@@ -51,7 +51,17 @@ time keys on row 8. Panel: SEED and RULE (with CV), SCALE (41 norns scales), TRA
 gate PROB per voice. Outputs: V/OCT and GATE for each voice, SEED as 0-10 V, STEP trigger.
 See `docs/LessConcepts-Guide.pdf`.
 
+## GridKeys
+
+A Push-style note keyboard. The bottom-left key is the root in the starting octave; notes rise
+to the right and each row starts a 4th (or 3rd, 5th, octave, or sequential) higher, so the same
+note appears in several places. In Key or Chromatic, Push's 26 scales, WIDTH 4-16 columns
+(default 8) with grid controls in column 16 (octave, latch, layout, row interval, chord keys,
+held sustain). Chord keys play an in-key triad or 7th, with STRUM. CHORD input (poly V/OCT)
+turns a chord into the scale; SHOW input lights notes another module plays. Outputs: poly
+V/OCT + GATE, mono V/OCT + GATE with glide, TRIG. See `docs/GridKeys-Guide.pdf`.
+
 ## Building
 
 Builds for Apple Silicon Macs run on GitHub Actions on every push (see `.github/workflows`).
-Panel: `python3 res/make_panel.py`. Logic tests: `g++ -std=c++11 -I src test/core_test.cpp -o core_test && ./core_test` and the same for `test/lc_test.cpp`.
+Panel: `python3 res/make_panel.py`. Logic tests: `g++ -std=c++11 -I src test/core_test.cpp -o core_test && ./core_test` and the same for `test/lc_test.cpp` and `test/gk_test.cpp`.
