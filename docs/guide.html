@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@page{size:A4;margin:16mm}
+body{font-family:Inter,Helvetica,Arial,sans-serif;color:#222;font-size:10.5pt;line-height:1.45}
+h1{font-size:22pt;margin:0 0 2mm}h2{font-size:13pt;margin:6mm 0 2mm;border-bottom:1px solid #ccc;padding-bottom:1mm}
+.sub{color:#777;margin-bottom:5mm}
+.wrap{display:flex;gap:7mm}.wrap img{width:78mm;border-radius:2mm}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #e3e3e3;padding:1.4mm 2mm;text-align:left;vertical-align:top}th{background:#f4f2ec}
+ol li,ul li{margin-bottom:1.2mm}.tip{background:#f4f2ec;padding:3mm 4mm;border-radius:2mm;margin-top:3mm}
+.grid{display:grid;grid-template-columns:22mm repeat(16,6mm);gap:.8mm;font-size:7pt;align-items:center}
+.k{height:6mm;border-radius:1mm;background:#ddd}.lab{font-weight:700;font-size:8pt}
+</style></head><body>
+<h1>GridDrums</h1><div class="sub">Gridworks plugin for VCV Rack 2 · a six-track drum sequencer for the monome grid · by Hær</div>
+<div class="wrap"><img src="../panel-preview.png"><div>
+<h2 style="margin-top:0">What it does</h2>
+<p>Six drum tracks of sixteen steps. Each track is one row on your grid. Press a key to switch a step on or off; the lights show the pattern and the step that's playing. The same grid is drawn on the panel and you can click it, so it also works without the grid plugged in.</p>
+<p>Sixteen <b>memory slots</b> hold sixteen patterns. Press a slot and it takes over at the start of the next bar, so changes always land on the one.</p>
+<h2>Before you start</h2>
+<ul><li>Install <b>serialosc</b> from monome.org (the free helper that lets apps talk to the grid). Same one the monome-rack modules use.</li>
+<li>Install <b>Gridworks-2.0.0-mac-arm64.vcvplugin</b> by dropping it into Rack's plugins folder, then restart Rack.</li></ul>
+</div></div>
+
+<h2>The grid map</h2>
+<div class="grid">
+<div class="lab">Rows 1-6</div><div style="grid-column:span 16">Track 1 to 6. One key per step (column 1 = step 1)</div>
+<div class="lab">Row 7</div><div style="grid-column:span 6;background:#ddd;border-radius:1mm;padding:1mm">MUTE tracks 1-6</div><div style="grid-column:span 6"></div><div style="grid-column:span 2;background:#f2c9b9;border-radius:1mm;padding:1mm">CLEAR</div><div style="grid-column:span 2;background:#bfe2dc;border-radius:1mm;padding:1mm">COPY</div>
+<div class="lab">Row 8</div><div style="grid-column:span 16;background:#e9e4d3;border-radius:1mm;padding:1mm">SLOTS 1 to 16 (bright = playing, blinking = waiting for the bar, dim = has a pattern)</div>
+</div>
+<table style="margin-top:3mm">
+<tr><th>To…</th><th>On the grid</th><th>On the panel</th></tr>
+<tr><td>Switch a step on/off</td><td>Press its key</td><td>Click it</td></tr>
+<tr><td>Mute a track</td><td>Row 7, keys 1-6 (they flash as the track plays)</td><td>Click the same keys</td></tr>
+<tr><td>Change pattern</td><td>Row 8: press a slot</td><td>Click a slot</td></tr>
+<tr><td>Copy this pattern to a new slot (to make a variation)</td><td>Hold COPY, press the slot</td><td>Click COPY, then the slot</td></tr>
+<tr><td>Empty one track</td><td>Hold CLEAR, press any key in that track</td><td>Click CLEAR, then the track</td></tr>
+<tr><td>Empty a slot</td><td>Hold CLEAR, press the slot</td><td>Click CLEAR, then the slot</td></tr>
+</table>
+
+<h2>First patch (2 minutes)</h2>
+<ol><li>Add <b>GridDrums</b>. Its GRID light turns green when it has found your grid (the status line says which).</li>
+<li>Clock: a <b>VCV Clock</b> ×4 output (16th notes) → <b>CLOCK</b>. Its reset output → <b>RESET</b>.</li>
+<li><b>TR 1</b> → kick (e.g. Boohm), <b>TR 2</b> → snare, <b>TR 3/TR 4</b> → closed/open hat (808 Metal), TR 5/6 → percussion. Slot 1 starts with a basic four-to-the-floor beat.</li>
+<li>Press COPY + slot 2, change a few steps in slot 2, then jump between slots 1 and 2 to build a section.</li></ol>
+<div class="tip"><b>Arrangement idea.</b> Plug a sequencer's pitch output into <b>SLOT</b>: each semitone picks the next slot (0 V/C = slot 1, C# = slot 2…). A slow sequence of notes, one per bar or per 4 bars, becomes the song form. Long Form or Metropolix can drive it. <b>BAR</b> gives a trigger on every step 1 to clock that sequencer.</div>
+
+<h2>Right-click menu</h2>
+<ul><li><b>Grid list</b>: choose which grid this module uses. Only one module or app can use a grid at a time; choosing it here takes it from monome-rack or other apps, and choosing it there takes it back.</li>
+<li><b>Let go of the grid</b> / <b>Look for grids again</b> (if you plugged the grid in after opening Rack and it isn't found).</li>
+<li><b>Gate outputs</b>: outputs stay high as long as the clock pulse instead of a short 5 ms trigger.</li>
+<li><b>Change slot at once</b>: skip waiting for the bar. (If the clock is stopped, slot changes are always at once.)</li>
+<li>Clear the playing slot · Unmute all. Rack's Randomize makes a random beat in the playing slot.</li></ul>
+<p style="color:#777">Everything (all 16 slots, mutes, the grid choice) is saved with the patch. A 16×16 grid uses its top half; an 8-wide grid shows steps 1-8.</p>
+</body></html>
