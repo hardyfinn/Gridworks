@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@page{size:A4;margin:15mm}
+body{font-family:Inter,Helvetica,Arial,sans-serif;color:#222;font-size:10pt;line-height:1.42}
+h1{font-size:22pt;margin:0 0 1mm}h2{font-size:12.5pt;margin:5mm 0 2mm;border-bottom:1px solid #ccc;padding-bottom:1mm}
+.sub{color:#777;margin-bottom:4mm}.wrap{display:flex;gap:6mm}.wrap img{width:86mm;border-radius:2mm}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #e3e3e3;padding:1.2mm 2mm;text-align:left;vertical-align:top}th{background:#eef1f3}
+li{margin-bottom:1mm}.tip{background:#eef1f3;padding:3mm 4mm;border-radius:2mm;margin-top:3mm}
+.pb{page-break-before:always}
+</style></head><body>
+<h1>LessConcepts</h1><div class="sub">Gridworks plugin for VCV Rack 2 · after the norns script <i>less concepts</i> by dan derks and linus schrab · by Hær</div>
+<div class="wrap"><img src="../lessconcepts-preview.png"><div>
+<h2 style="margin-top:0">The idea in one minute</h2>
+<p>An 8-bit number, the <b>SEED</b>, changes once per step according to a <b>RULE</b> (0–255). This is a cellular automaton: each bit's next value depends on itself and its two neighbours. Some rules settle into loops, others never repeat. Rule 30 is the classic chaotic one.</p>
+<p>Each of the two <b>voices</b> watches one of the 8 bits. When that bit is 1, the voice plays a note. The note comes from the whole 8-bit number, squeezed into a <b>LOW–HIGH</b> range of scale steps. Small changes such as a different bit, rule or range give you a related but new melody. That's how the script gives you 65,536 seed/rule combinations to explore.</p>
+<h2>Patch it up</h2>
+<ol><li><b>CLOCK</b> ← 16th notes (VCV Clock ×4, or change it in the menu). <b>RESET</b> ← clock reset.</li>
+<li><b>V/OCT 1 + GATE 1</b> → a synth voice (e.g. Buchla 259t). <b>V/OCT 2 + GATE 2</b> → a second voice, or the same synth an octave apart.</li>
+<li>Turn <b>SEED</b> and <b>RULE</b>, or press <b>RAND</b> keys on the grid, until something catches. Then take a snapshot (KEYS row, key 16).</li></ol>
+</div></div>
+
+<h2>The grid (same map as the norns script)</h2>
+<table>
+<tr><th style="width:24%">Row</th><th>Keys</th></tr>
+<tr><td><b>1 V1 · 2 V2</b></td><td>Keys 1–8: which bit the voice follows (left = bit 8, right = bit 1). Dim = bits that are 1 now, bright = the voice playing. Key 9: voice off. Keys 10–16: octave −3 to +3.</td></tr>
+<tr><td><b>3 RAND</b></td><td>1 seed · 2 rule · 4/5 bit for V1/V2 · 7 low · 8 high · 10/11 octave V1/V2 · 13 time · 14 time + everything · 16 everything</td></tr>
+<tr><td><b>4–5 notes</b></td><td>The 32 scale steps (row 4 = 1–16, row 5 = 17–32). The two brighter keys are LOW and HIGH; the dim one is the note just played. To set them, hold <b>KEYS 1</b> (low) or <b>KEYS 2</b> (high) and press a note. If LOW is above HIGH, the melody runs upside down.</td></tr>
+<tr><td><b>6 KEYS</b></td><td>1 = set LOW, 2 = set HIGH (hold) · 9 / 10 / 11 = cycle snapshots down / random / up · 14 hold = clear all snapshots · 15 hold = clear the selected one · 16 = take a snapshot</td></tr>
+<tr><td><b>7–8 SNAP</b></td><td>Keys 9–16: snapshots 1–8 (row 7) and 9–16 (row 8). Dim = empty, mid = stored, bright = selected. Holding a snapshot pauses cycling.</td></tr>
+<tr><td><b>8 TIME</b></td><td>Keys 1 / 2 / 3: slower · middle (1/16) · faster. The steps are 1/8, 1/8t, 1/16, 1/16t, 1/32 (menu: wider ranges).</td></tr>
+</table>
+<p>On the panel, click the same keys. For LOW/HIGH, click KEYS 1 or 2 once, then click a note. The hold keys work by holding the mouse button down.</p>
+
+<h2>Snapshots and cycling</h2>
+<p>A snapshot stores seed, rule, both bits, both octaves, LOW/HIGH, time and cycle length. With snapshots stored, tap <b>9 / 10 / 11</b> on the KEYS row to cycle down / random / up, changing every <b>4 beats</b> (menu: 1–32). Tap the same key again to stop.</p>
+<p><b>Hold</b> a cycle key for half a second to make cycling <b>destructive</b> (the key goes brighter). In this mode, whatever you change is written straight into the selected snapshot, so you can sculpt each snapshot while it plays. Hold again to switch it back.</p>
+
+<h2>Panel</h2>
+<table>
+<tr><td><b>SEED</b>, <b>RULE</b> (+ CV)</td><td>0–255. A CV of 0–10 V sweeps the full range on top of the knob. Each new value restarts the automaton from that seed. The knobs follow the grid's RAND keys and snapshots.</td></tr>
+<tr><td><b>SCALE</b></td><td>The norns scale list: Major, Natural Minor, Dorian… Chromatic (41 scales), root C. The knob's tooltip shows the name.</td></tr>
+<tr><td><b>TRANSP</b></td><td>Moves both voices ±24 semitones.</td></tr>
+<tr><td><b>PROB 1 / 2</b></td><td>Chance (%) that a voice plays when its bit says so. Lower it for space.</td></tr>
+<tr><td>Outputs</td><td>V/OCT 1/2 (0 V = C4, held between notes) · GATE 1/2 · <b>SEED</b>: the 8 bits as 0–10 V, a stepped random-ish CV for filters, etc. · <b>STEP</b>: a trigger every step.</td></tr>
+</table>
+
+<h2>Right-click menu</h2>
+<ul><li>Pick the grid, let go of it, look for grids again. serialosc must be running, as for the monome-rack modules.</li>
+<li><b>Clock input</b>: 16ths, 8ths, quarters or 24 PPQN. <b>Time range</b>: legacy 1/8–1/32, slow 1/1–1/16, full 2/1–1/32.</li>
+<li><b>Gate length</b>: 5 ms trigger, half a step (default) or a whole step.</li>
+<li><b>Voice note jump</b>: the script's "transpose / tran prob". Gives each note a chance of jumping by an octave, a fifth, and so on.</li>
+<li>Snapshot cycle length · random octave range · randomise everything · clear all snapshots.</li></ul>
+
+<div class="tip"><b>Arrangement ideas.</b> (1) Build 4 snapshots as verse/chorus variants and let <b>cycle up</b> run them every 16 beats. (2) Patch a slow LFO or Long Form into <b>RULE CV</b> so the melody's character drifts across a section. (3) Send <b>SEED</b> out to a filter cutoff: it moves in step with the melody's logic. (4) Clock it at 1/8t against GridDrums at 1/16 for a cross-rhythm.</div>
+<p style="color:#777;margin-top:4mm">Not included from the norns version: the ~refrain softcut looper, the Passersby engine, and MIDI/crow/JF/w/syn outputs. Needs a 16-wide grid. Everything (snapshots, cycle mode, menu choices, grid) is saved with the patch.</p>
+</body></html>

@@ -40,7 +40,18 @@ modules or other apps, and choosing it in their menu takes it back.
 
 A 16 x 16 grid uses its top half. An 8-wide grid shows steps 1 to 8 only.
 
+## LessConcepts
+
+A two-voice melody sequencer driven by an 8-bit cellular automaton, after the norns script
+[less concepts](https://github.com/vicimity-dndrks/less-concepts) by dan derks and linus schrab
+(written fresh for Rack; the ~refrain looper and MIDI/crow outputs are left out). Same grid map
+as the script: bits and octaves for each voice on rows 1-2, randomise keys on row 3, the 32-note
+LOW/HIGH range on rows 4-5, snapshot keys and cycle modes on row 6, 16 snapshots on rows 7-8,
+time keys on row 8. Panel: SEED and RULE (with CV), SCALE (41 norns scales), TRANSPOSE,
+gate PROB per voice. Outputs: V/OCT and GATE for each voice, SEED as 0-10 V, STEP trigger.
+See `docs/LessConcepts-Guide.pdf`.
+
 ## Building
 
 Builds for Apple Silicon Macs run on GitHub Actions on every push (see `.github/workflows`).
-Panel: `python3 res/make_panel.py`. Logic test: `g++ -std=c++11 -I src test/core_test.cpp -o core_test && ./core_test`.
+Panel: `python3 res/make_panel.py`. Logic tests: `g++ -std=c++11 -I src test/core_test.cpp -o core_test && ./core_test` and the same for `test/lc_test.cpp`.
