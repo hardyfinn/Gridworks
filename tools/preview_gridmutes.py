@@ -25,7 +25,7 @@ for ch in range(18):
     y = L["CH_Y0"] + (ch % 6) * L["CH_DY"]
     jack(L["IN_X"][ch // 6], y); jack(L["OUT_X"][ch // 6], y)
     on = (ch + 1) not in muted
-    g.append(f'<circle cx="{L["OUT_X"][ch // 6] + L["NUM_DX"] - 1.6}" cy="{y + 3.0}" r="0.9" fill="{"#E6B450" if on else "#3A3330"}"/>')
+    g.append(f'<circle cx="{L["OUT_X"][ch // 6] - 6.0}" cy="{y}" r="0.9" fill="{"#E6B450" if on else "#3A3330"}"/>')
 # grid picture
 C, GX, GY = L["CELL"], L["GX0"], L["GY0"]
 MOD = {(4, 0): "CUE", (4, 1): "LOCK", (4, 2): "SOLO", (4, 3): "A/B", (4, 4): "PAIR", (4, 5): "INV",

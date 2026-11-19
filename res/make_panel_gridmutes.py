@@ -81,9 +81,6 @@ for xs, name, fill in [(IN_X, "INPUTS", None), (OUT_X, "OUTPUTS", OUT_BG)]:
     else:
         add(f'<rect x="{x1}" y="12.0" width="{x2 - x1}" height="{CH_Y0 + 5 * CH_DY + 7.0 - 12.0}" rx="1.6" fill="none" stroke="{LINE}" stroke-width="0.4"/>')
     add(text(name, (x1 + x2) / 2, 18.6, CONTROL))
-    for ch in range(NUM_CH):
-        x = xs[ch // 6]
-        add(text(str(ch + 1), x + NUM_DX, ch_y(ch) + 0.2, JACK, FONT_BOLD, GOLD, anchor="end"))
 
 # screen
 add(f'<rect x="{GX0 - 4.0}" y="12.0" width="{W - 3.0 - (GX0 - 4.0)}" height="{STATUS_Y + 4.0 - 12.0}" rx="1.6" fill="{SCREEN}"/>')
