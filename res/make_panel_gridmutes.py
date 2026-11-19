@@ -13,7 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FONT_BOLD = os.environ.get("PANEL_FONT_BOLD", "/usr/share/fonts/opentype/inter/Inter-Bold.otf")
 FONT_MED = os.environ.get("PANEL_FONT_MED", "/usr/share/fonts/opentype/inter/Inter-Medium.otf")
 
-W, H = 223.52, 128.5  # 44 HP
+W, H = 208.28, 128.5  # 41 HP
 
 BG = "#262329"
 SCREEN = "#121014"
@@ -24,17 +24,17 @@ OUT_BG = "#1A171C"
 GOLD = "#E6B450"
 
 # ---- LAYOUT (same numbers in src/GridMutes.cpp) ----
-IN_X = [18.65, 29.15, 39.65]            # input jacks: 3 columns of 6 (ch 1-6, 7-12, 13-18)
-OUT_X = [56.85, 67.35, 77.85]           # output jacks, same order
+IN_X = [10.6, 21.1, 31.6]            # input jacks: 3 columns of 6 (ch 1-6, 7-12, 13-18)
+OUT_X = [47.8, 58.3, 68.8]           # output jacks, same order
 CH_Y0, CH_DY = 26.0, 11.6
 LIGHT_DX, LIGHT_DY = 4.3, -4.6        # mute light, up and right of each output
 CELL = 7.5
-GX0, GY0 = 98.5, 17.0               # on-screen grid
+GX0, GY0 = 83.4, 17.0               # on-screen grid
 STATUS_Y = 83.0
 NUM_CH = 18
 JACK_Y = 111.0
 X_CLOCK, X_RESET, X_SCENE, X_TRIG = 12.0, 26.0, 44.0, 58.0
-X_FADE, X_GRIDLIGHT, X_MIX = 160.0, 182.0, 210.0
+X_FADE, X_GRIDLIGHT, X_MIX = 145.0, 167.0, 195.0
 
 CONTROL = 3.2   # control label size (project standard)
 JACK = 2.9      # jack label size (project standard)

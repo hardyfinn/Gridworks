@@ -7,7 +7,7 @@ svg = open(os.path.join(HERE, "..", "res", "GridMutes.svg")).read()
 L = {}
 src = open(os.path.join(HERE, "..", "res", "make_panel_gridmutes.py")).read()
 exec(src.split("# ---- LAYOUT")[1].split("CONTROL =")[0].split("\n", 1)[1], L)
-W = 223.52
+W = 208.28
 g = []
 def jack(x, y):
     g.append(f'<circle cx="{x}" cy="{y}" r="4.1" fill="#C9CCD1"/><circle cx="{x}" cy="{y}" r="3.1" fill="#7C8088"/><circle cx="{x}" cy="{y}" r="1.9" fill="#0B0B0C"/>')
@@ -69,7 +69,7 @@ for x in (7.6, W - 15.2):
 svg = svg.replace("</svg>", "\n".join(g) + "\n</svg>")
 out = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "preview.png")
 tmp = out + ".svg"; open(tmp, "w").write(svg)
-pw, ph = 1118, 643
+pw, ph = 1042, 643
 open(tmp + ".html", "w").write(f'<html><body style="margin:0;background:#111"><img src="{os.path.basename(tmp)}" style="width:{pw}px;height:{ph}px"></body></html>')
 js = f"""const {{chromium}} = require('playwright');
 (async () => {{ const b = await chromium.launch(); const p = await b.newPage({{viewport: {{width: {pw}, height: {ph}}}, deviceScaleFactor: 2}});
