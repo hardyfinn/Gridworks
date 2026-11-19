@@ -24,10 +24,10 @@ OUT_BG = "#1A171C"
 GOLD = "#E6B450"
 
 # ---- LAYOUT (same numbers in src/GridMutes.cpp) ----
-IN_X = [14.5, 28.0, 41.5]            # input jacks: 3 columns of 6 (ch 1-6, 7-12, 13-18)
-OUT_X = [59.0, 72.5, 86.0]           # output jacks, same order
+IN_X = [18.65, 29.15, 39.65]            # input jacks: 3 columns of 6 (ch 1-6, 7-12, 13-18)
+OUT_X = [56.85, 67.35, 77.85]           # output jacks, same order
 CH_Y0, CH_DY = 26.0, 11.6
-NUM_DX = -4.9                        # channel number ends just left of each jack
+LIGHT_DX, LIGHT_DY = 4.3, -4.6        # mute light, up and right of each output
 CELL = 7.5
 GX0, GY0 = 98.5, 17.0               # on-screen grid
 STATUS_Y = 83.0
@@ -75,7 +75,7 @@ add(text("GRIDWORKS", W - 6.0, 8.6, 2.6, FONT_MED, SOFT, anchor="end", spacing=0
 
 # inputs and outputs: one block each, channels down the columns
 for xs, name, fill in [(IN_X, "INPUTS", None), (OUT_X, "OUTPUTS", OUT_BG)]:
-    x1, x2 = xs[0] - 11.0, xs[2] + 4.9
+    x1, x2 = xs[0] - 6.6, xs[2] + (7.6 if fill else 6.6)
     if fill:
         add(f'<rect x="{x1}" y="12.0" width="{x2 - x1}" height="{CH_Y0 + 5 * CH_DY + 7.0 - 12.0}" rx="1.6" fill="{fill}"/>')
     else:
