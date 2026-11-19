@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset="utf-8"><style>
 @page{size:A4;margin:15mm}
-body{font-family:Inter,Helvetica,Arial,sans-serif;color:#222;font-size:10pt;line-height:1.42}
+body{font-family:Inter,Helvetica,Arial,sans-serif;color:#222;font-size:9.6pt;line-height:1.38}
 h1{font-size:22pt;margin:0 0 1mm}h2{font-size:12.5pt;margin:5mm 0 2mm;border-bottom:1px solid #ccc;padding-bottom:1mm}
 .sub{color:#777;margin-bottom:4mm}.wrap{display:flex;gap:6mm}.wrap img{width:92mm;border-radius:2mm;align-self:flex-start}
 table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #e3e3e3;padding:1.2mm 2mm;text-align:left;vertical-align:top}th{background:#eef1f3}
@@ -22,7 +22,7 @@ li{margin-bottom:1mm}.tip{background:#eef1f3;padding:3mm 4mm;border-radius:2mm;m
 <table>
 <tr><td style="width:24%"><b>ROOT</b>, <b>SCALE</b></td><td>Root note C–B and one of Push's 26 scales (Major, Minor, Dorian … Spanish, Chromatic). The knob's tooltip shows the name. Root keys glow gold.</td></tr>
 <tr><td><b>OCTAVE</b></td><td>The octave of the bottom-left key (0–7, default 3, so C3). The grid's OCT +/− keys shift this up or down on top.</td></tr>
-<tr><td><b>WIDTH</b></td><td>How many columns are notes, from 4 to 16 (default 8). Narrow rows mean more repeats of each note and smaller hand shapes. At 16 the control column is gone and the whole grid is notes.</td></tr>
+<tr><td><b>WIDTH</b></td><td>How many columns are notes, from 4 to 10 (default 8). Narrow rows mean more repeats of each note and smaller hand shapes. Columns 11–15 are always the chord area.</td></tr>
 <tr><td><b>ROW</b></td><td>How much higher each row starts: <b>4th</b> (Push default), <b>3rd</b>, <b>5th</b>, <b>octave</b>, or <b>sequential</b> (each row carries on where the row below ends, so no repeats). If the jump would be wider than the row, it's limited to the width so no notes get skipped; the status line then shows "=W".</td></tr>
 <tr><td><b>IN KEY / CHROM</b></td><td><b>In Key</b>: only scale notes, so you can't play a wrong note. <b>Chrom</b>: all 12 notes, with scale notes lit and the others dark (menu: dim instead of dark).</td></tr>
 <tr><td><b>PLAYS</b></td><td><b>Note</b>: one key, one note. <b>Triad</b> / <b>7th</b>: each key plays a chord built from the scale on that note (in C major, D gives D F A, or D F A C). In Chromatic mode, keys outside the scale still play a single note.</td></tr>
@@ -35,7 +35,7 @@ li{margin-bottom:1mm}.tip{background:#eef1f3;padding:3mm 4mm;border-radius:2mm;m
 </table>
 
 <h2>The grid</h2>
-<p>With WIDTH below 16, column 16 holds the controls. Columns between the note area and column 16 are unused and stay dark.</p>
+<p>Columns 1–10 are notes (up to WIDTH; the rest stay dark), columns 11–15 are the <b>chord area</b> (next section), and column 16 holds the controls.</p>
 <table>
 <tr><th style="width:24%">Column 16, row</th><th>Key</th></tr>
 <tr><td>1 · 2</td><td><b>OCT +</b> / <b>OCT −</b>: shift the whole keyboard an octave. The key gets brighter the further you've shifted.</td></tr>
@@ -47,10 +47,33 @@ li{margin-bottom:1mm}.tip{background:#eef1f3;padding:3mm 4mm;border-radius:2mm;m
 </table>
 <p><b>Lights:</b> bright = sounding (every copy of the note), gold on screen = root, dim = scale note, teal on screen = SHOW input. The panel's grid shows the note names and works with the mouse. Hold the button down to hold a note.</p>
 
+<h2>Chord mode (columns 11–15)</h2>
+<p>Inspired by the chord modes on the Hapax and OXI One sequencers. Rows 1–5 are <b>modifier pads</b>. <b>Tap</b> a pad and it stays on (bright) until you tap it again. <b>Hold</b> a pad while you play and it only applies to the notes you press while it's held. Pads in the same family replace each other. Pads change the next notes you play, not the ones already sounding.</p>
+<table>
+<tr><th style="width:24%">Row</th><th>Pads (columns 11 → 15)</th></tr>
+<tr><td>1 shape</td><td><b>MAJ MIN DIM SUS2 SUS4</b>. With no shape pad on, chords follow the scale (D in C major = D minor). A shape pad forces that chord on any key, even outside the scale.</td></tr>
+<tr><td>2 added notes</td><td><b>6</b> · <b>7</b> · <b>MAJ7</b> · <b>9</b> · <b>ADD9</b>. 9, 11 and 13 bring the 7th with them, as in chord symbols; ADD9 adds just the 9th. Without a shape pad the added notes come from the scale.</td></tr>
+<tr><td>3 more</td><td><b>11</b> · <b>13</b> · <b>AUG</b> (shape) · <b>PWR</b> (root + 5th, shape) · <b>RND</b>: a random extension every time you play.</td></tr>
+<tr><td>4 inversion</td><td><b>INV0</b> (none, dim-lit as the default) · <b>INV1–3</b>: lowest note(s) moved up an octave · <b>DRP2</b>: drop 2, the second-highest note down an octave.</td></tr>
+<tr><td>5 voicing</td><td><b>OPEN</b>: second note up an octave · <b>SPRD</b>: notes spread over several octaves · <b>BASS</b>: adds the root an octave below · <b>TOP+</b>: top note up an octave · <b>RST</b>: turns every pad off.</td></tr>
+<tr><td>6 memory keys</td><td><b>SAVE</b> · <b>DEL</b> · <b>COPY</b> · <b>PREV</b> · <b>NEXT</b> (see below)</td></tr>
+<tr><td>7–8 slots</td><td>Chord memory slots <b>1–5</b> (row 7) and <b>6–10</b> (row 8). Dark = empty, dim = stored, brighter = last used, bright = playing.</td></tr>
+</table>
+<p>With PLAYS on NOTE and no pads on, a key plays one note as before. PLAYS TRIAD or 7TH still works and the pads add to it.</p>
+<h2>Chord memory</h2>
+<ul><li><b>Save:</b> hold SAVE and tap a slot. It stores the last chord you played, exactly as it sounded: the same notes, whatever you change later.</li>
+<li><b>Play:</b> tap a slot. It works like a note key: it sounds while held, and LATCH, SUSTAIN and STRUM all apply.</li>
+<li><b>Delete:</b> hold DEL and tap a slot. <b>Copy:</b> hold COPY, tap the slot to copy, then tap where it goes.</li>
+<li><b>PREV / NEXT</b> play the previous / next stored slot, so you can step through a progression with one key.</li>
+<li><b>SLOT</b> input: one semitone per slot, from <b>C4 = slot 1</b> up to <b>A4 = slot 10</b> (the same as GridDrums' slot CV). Any quantised sequencer can play your progression this way.</li>
+<li><b>PLAY</b> input: a gate. The slot sounds while it's high, and each new gate retriggers it. Without a PLAY cable, every change on SLOT plays the new chord and holds it until the next change.</li></ul>
+<p>The memory and the pads you left on are saved with the patch. The right-click menu can clear either.</p>
+
 <h2>Right-click menu</h2>
 <ul><li>Pick the grid, let go of it, look for grids again. serialosc must be running, the same as for the monome-rack modules. Each Gridworks module uses its own grid, so to play GridKeys and GridDrums together you need two grids.</li>
 <li><b>Polyphony</b>: how many poly channels (1–16, default 8).</li>
 <li><b>Dimly light notes outside the scale</b> in Chromatic mode.</li>
+<li><b>Clear all chord pads</b> · <b>Clear the chord memory</b>.</li>
 <li><b>Reset the grid's octave shift.</b></li></ul>
 
 <div class="tip"><b>Ideas.</b> (1) Patch <b>The Changes</b> poly out into <b>CHORD</b>: the grid now only offers the current chord's notes, so every key fits the harmony. (2) Put <b>PLAYS</b> on Triad with <b>STRUM</b> at 30–60 ms and <b>LATCH</b> on for arpeggio-like pads you change with one finger. (3) Feed LessConcepts' V/OCT into <b>SHOW</b> and play answers to its melody. (4) Use <b>TRIG</b> to fire an envelope or a drum each time you play.</div>

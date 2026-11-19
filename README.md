@@ -58,7 +58,9 @@ to the right and each row starts a 4th (or 3rd, 5th, octave, or sequential) high
 note appears in several places. In Key or Chromatic, Push's 26 scales, WIDTH 4-16 columns
 (default 8) with grid controls in column 16 (octave, latch, layout, row interval, chord keys,
 held sustain). Chord keys play an in-key triad or 7th, with STRUM. CHORD input (poly V/OCT)
-turns a chord into the scale; SHOW input lights notes another module plays. Outputs: poly
+turns a chord into the scale; SHOW input lights notes another module plays. WIDTH 4-10 leaves
+columns 11-15 for chord mode: 25 modifier pads (shape, extensions, inversion, voicing) and a
+10-slot chord memory, playable from the SLOT (1 semitone per slot) and PLAY inputs. Outputs: poly
 V/OCT + GATE, mono V/OCT + GATE with glide, TRIG. See `docs/GridKeys-Guide.pdf`.
 
 ## Building
