@@ -20,12 +20,12 @@ random.seed(4)
 level = {}
 for ch in range(1, 19):
     level[ch] = random.choice([0, 0.2, 0.45, 0.7, 1.0, 1.0])
-# channel jacks + mute lights
+# channel jacks + mute lights (next to each output)
 for ch in range(18):
-    x0 = L["CH_X0"] + (ch // 6) * L["CH_COLW"]; y = L["CH_Y0"] + (ch % 6) * L["CH_DY"]
-    jack(x0 + L["CH_IN"], y); jack(x0 + L["CH_OUT"], y)
+    y = L["CH_Y0"] + (ch % 6) * L["CH_DY"]
+    jack(L["IN_X"][ch // 6], y); jack(L["OUT_X"][ch // 6], y)
     on = (ch + 1) not in muted
-    g.append(f'<circle cx="{x0 + L["CH_NUM"]}" cy="{y + 3.2}" r="1.0" fill="{"#E6B450" if on else "#3A3330"}"/>')
+    g.append(f'<circle cx="{L["OUT_X"][ch // 6] + L["NUM_DX"] - 1.6}" cy="{y + 3.0}" r="0.9" fill="{"#E6B450" if on else "#3A3330"}"/>')
 # grid picture
 C, GX, GY = L["CELL"], L["GX0"], L["GY0"]
 MOD = {(4, 0): "CUE", (4, 1): "LOCK", (4, 2): "SOLO", (4, 3): "A/B", (4, 4): "PAIR", (4, 5): "INV",

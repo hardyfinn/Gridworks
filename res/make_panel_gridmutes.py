@@ -24,11 +24,12 @@ OUT_BG = "#1A171C"
 GOLD = "#E6B450"
 
 # ---- LAYOUT (same numbers in src/GridMutes.cpp) ----
-CH_X0, CH_COLW = 5.0, 27.0          # channel block: 3 columns of 6, like the grid
-CH_NUM, CH_IN, CH_OUT = 4.2, 12.8, 23.0   # offsets inside a column
+IN_X = [14.5, 28.0, 41.5]            # input jacks: 3 columns of 6 (ch 1-6, 7-12, 13-18)
+OUT_X = [59.0, 72.5, 86.0]           # output jacks, same order
 CH_Y0, CH_DY = 26.0, 11.6
+NUM_DX = -4.9                        # channel number ends just left of each jack
 CELL = 7.5
-GX0, GY0 = 96.0, 17.0               # on-screen grid
+GX0, GY0 = 98.5, 17.0               # on-screen grid
 STATUS_Y = 83.0
 NUM_CH = 18
 JACK_Y = 111.0
@@ -39,8 +40,8 @@ CONTROL = 3.2   # control label size (project standard)
 JACK = 2.9      # jack label size (project standard)
 
 
-def ch_pos(ch):   # ch 0..23 -> (x of column, y of row)
-    return CH_X0 + (ch // 6) * CH_COLW, CH_Y0 + (ch % 6) * CH_DY
+def ch_y(ch):
+    return CH_Y0 + (ch % 6) * CH_DY
 
 
 fonts = {}
@@ -72,20 +73,20 @@ add(text("GridMutes", 6.0, 9.0, 5.2, FONT_BOLD, INK, anchor="start", spacing=0.0
 add(text("18-channel performance mutes", 35.5, 8.6, 2.4, FONT_MED, SOFT, anchor="start"))
 add(text("GRIDWORKS", W - 6.0, 8.6, 2.6, FONT_MED, SOFT, anchor="end", spacing=0.12))
 
-# channel block
-add(f'<rect x="3.0" y="12.0" width="{3 * CH_COLW + 1.0}" height="{CH_Y0 + 5 * CH_DY + 7.0 - 12.0}" rx="1.6" fill="{OUT_BG}"/>')
-for c in range(3):
-    x0 = CH_X0 + c * CH_COLW
-    add(text("IN", x0 + CH_IN, 18.6, JACK))
-    add(text("OUT", x0 + CH_OUT, 18.6, JACK))
-    if c:
-        add(f'<line x1="{x0 + 0.3}" y1="14.5" x2="{x0 + 0.3}" y2="{CH_Y0 + 5 * CH_DY + 5.0}" stroke="{LINE}" stroke-width="0.3"/>')
-for ch in range(NUM_CH):
-    x0, y = ch_pos(ch)
-    add(text(str(ch + 1), x0 + CH_NUM, y + 0.2, CONTROL, FONT_BOLD, GOLD))
+# inputs and outputs: one block each, channels down the columns
+for xs, name, fill in [(IN_X, "INPUTS", None), (OUT_X, "OUTPUTS", OUT_BG)]:
+    x1, x2 = xs[0] - 11.0, xs[2] + 4.9
+    if fill:
+        add(f'<rect x="{x1}" y="12.0" width="{x2 - x1}" height="{CH_Y0 + 5 * CH_DY + 7.0 - 12.0}" rx="1.6" fill="{fill}"/>')
+    else:
+        add(f'<rect x="{x1}" y="12.0" width="{x2 - x1}" height="{CH_Y0 + 5 * CH_DY + 7.0 - 12.0}" rx="1.6" fill="none" stroke="{LINE}" stroke-width="0.4"/>')
+    add(text(name, (x1 + x2) / 2, 18.6, CONTROL))
+    for ch in range(NUM_CH):
+        x = xs[ch // 6]
+        add(text(str(ch + 1), x + NUM_DX, ch_y(ch) + 0.2, JACK, FONT_BOLD, GOLD, anchor="end"))
 
 # screen
-add(f'<rect x="{GX0 - 5.0}" y="12.0" width="{W - 3.0 - (GX0 - 5.0)}" height="{STATUS_Y + 4.0 - 12.0}" rx="1.6" fill="{SCREEN}"/>')
+add(f'<rect x="{GX0 - 4.0}" y="12.0" width="{W - 3.0 - (GX0 - 4.0)}" height="{STATUS_Y + 4.0 - 12.0}" rx="1.6" fill="{SCREEN}"/>')
 
 # bottom row
 add(f'<line x1="3.0" y1="{JACK_Y - 15.0}" x2="{W - 3.0}" y2="{JACK_Y - 15.0}" stroke="{LINE}" stroke-width="0.35"/>')
