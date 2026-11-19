@@ -24,12 +24,13 @@ OUT_BG = "#1A171C"
 GOLD = "#E6B450"
 
 # ---- LAYOUT (same numbers in src/GridMutes.cpp) ----
-CH_X0, CH_COLW = 5.0, 27.0          # channel block: 4 columns of 6, like the grid
+CH_X0, CH_COLW = 5.0, 27.0          # channel block: 3 columns of 6, like the grid
 CH_NUM, CH_IN, CH_OUT = 4.2, 12.8, 23.0   # offsets inside a column
 CH_Y0, CH_DY = 26.0, 11.6
-CELL = 6.0
-GX0, GY0 = 121.0, 17.0              # on-screen grid
-STATUS_Y = 70.0
+CELL = 7.5
+GX0, GY0 = 96.0, 17.0               # on-screen grid
+STATUS_Y = 83.0
+NUM_CH = 18
 JACK_Y = 111.0
 X_CLOCK, X_RESET, X_SCENE, X_TRIG = 12.0, 26.0, 44.0, 58.0
 X_FADE, X_GRIDLIGHT, X_MIX = 160.0, 182.0, 210.0
@@ -68,18 +69,18 @@ parts = []
 add = parts.append
 add(f'<rect width="{W}" height="{H}" fill="{BG}"/>')
 add(text("GridMutes", 6.0, 9.0, 5.2, FONT_BOLD, INK, anchor="start", spacing=0.02))
-add(text("24-channel performance mutes", 35.5, 8.6, 2.4, FONT_MED, SOFT, anchor="start"))
+add(text("18-channel performance mutes", 35.5, 8.6, 2.4, FONT_MED, SOFT, anchor="start"))
 add(text("GRIDWORKS", W - 6.0, 8.6, 2.6, FONT_MED, SOFT, anchor="end", spacing=0.12))
 
 # channel block
-add(f'<rect x="3.0" y="12.0" width="{4 * CH_COLW + 1.0}" height="{CH_Y0 + 5 * CH_DY + 7.0 - 12.0}" rx="1.6" fill="{OUT_BG}"/>')
-for c in range(4):
+add(f'<rect x="3.0" y="12.0" width="{3 * CH_COLW + 1.0}" height="{CH_Y0 + 5 * CH_DY + 7.0 - 12.0}" rx="1.6" fill="{OUT_BG}"/>')
+for c in range(3):
     x0 = CH_X0 + c * CH_COLW
     add(text("IN", x0 + CH_IN, 18.6, JACK))
     add(text("OUT", x0 + CH_OUT, 18.6, JACK))
     if c:
         add(f'<line x1="{x0 + 0.3}" y1="14.5" x2="{x0 + 0.3}" y2="{CH_Y0 + 5 * CH_DY + 5.0}" stroke="{LINE}" stroke-width="0.3"/>')
-for ch in range(24):
+for ch in range(NUM_CH):
     x0, y = ch_pos(ch)
     add(text(str(ch + 1), x0 + CH_NUM, y + 0.2, CONTROL, FONT_BOLD, GOLD))
 
