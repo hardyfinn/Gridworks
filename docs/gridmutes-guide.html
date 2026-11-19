@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@page{size:A4;margin:15mm}
+body{font-family:Inter,Helvetica,Arial,sans-serif;color:#222;font-size:9.6pt;line-height:1.38}
+h1{font-size:22pt;margin:0 0 1mm}h2{font-size:12.5pt;margin:5mm 0 2mm;border-bottom:1px solid #ccc;padding-bottom:1mm}
+.sub{color:#777;margin-bottom:4mm}img.wide{width:100%;border-radius:2mm}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #e3e3e3;padding:1.2mm 2mm;text-align:left;vertical-align:top}th{background:#eef1f3}
+li{margin-bottom:1mm}.tip{background:#eef1f3;padding:3mm 4mm;border-radius:2mm;margin-top:3mm}
+</style></head><body>
+<h1>GridMutes</h1><div class="sub">Gridworks plugin for VCV Rack 2 · 18 clocked performance mutes for the monome grid · by Hær</div>
+<img class="wide" src="../gridmutes-preview.png">
+<h2>Patch it up</h2>
+<ol><li>Patch up to 18 sounds, CVs or trigger streams into <b>INPUTS</b> (down each column: 1–6, 7–12, 13–18). Poly cables work too: all of a cable's channels mute together.</li>
+<li>Take each <b>OUTPUT</b> to your mixer, or leave an output unpatched and that channel goes into <b>MIX</b>, so GridMutes is also an 18-input submixer.</li>
+<li>Patch your clock (16th notes) into <b>CLOCK</b> and its reset into <b>RESET</b>. Without a clock, every change happens at once.</li></ol>
+
+<h2>The grid</h2>
+<table>
+<tr><th style="width:24%">Where</th><th>What</th></tr>
+<tr><td><b>Columns 1–3</b>, rows 1–6</td><td>Channels 1–18, laid out like the jacks. Tap to mute or unmute. Bright = playing, dark = muted, flashing = waiting for the timing point.</td></tr>
+<tr><td><b>Column 5</b></td><td><b>CUE</b> · <b>LOCK</b> · <b>SOLO</b> · <b>A/B</b> · <b>PAIR</b> · <b>INV</b></td></tr>
+<tr><td><b>Column 6</b></td><td><b>ALL+</b> (everything on) · <b>ALL-</b> (everything off) · <b>CLR</b> (forget waiting/cued changes and solos) · <b>SAVE</b> · <b>DEL</b> · <b>COPY</b></td></tr>
+<tr><td><b>Columns 8–10</b></td><td>Signal activity, in the same shape as the channel block: each key glows with that channel's level. A muted channel with signal glows dimly (grey on screen), so you can see what you'd bring in.</td></tr>
+<tr><td><b>Columns 13–16</b>, rows 1–4</td><td>Scenes 1–16. Dark = empty, dim = stored, bright = current, flashing = coming at the next timing point.</td></tr>
+<tr><td><b>Columns 13–16</b>, row 6</td><td>Timing: <b>NOW</b> · <b>BEAT</b> (default) · <b>BAR</b> · <b>2BAR</b>. Every change waits for the next one of these. Picking NOW lands anything waiting straight away.</td></tr>
+</table>
+<p>Every key is a tap, nothing needs holding, so the grid picture on the panel works just as well with the mouse.</p>
+
+<h2>Performance keys</h2>
+<ul>
+<li><b>CUE</b>: turn cue on, then tap channels to line up changes (they blink slowly). <b>LOCK</b> drops them all together at the next timing point. Turning CUE off also drops anything still lined up; CLR forgets them.</li>
+<li><b>SOLO</b>: while it's lit, tapping channels solos them (several at once is fine). Tap SOLO again to go back to muting; the solos stay until you tap them off or press CLR.</li>
+<li><b>A/B</b>: tap A/B, then two channels. From then on they're always opposite: tapping either swaps them. Do the same two again to undo it.</li>
+<li><b>PAIR</b>: tap PAIR, then a channel: it's linked to the next one (1 with 2, 7 with 8…) for stereo. Tap it again in PAIR mode to undo.</li>
+<li><b>INV</b>: every channel flips: what was playing mutes, what was muted plays.</li>
+</ul>
+<h2>Scenes</h2>
+<ul>
+<li><b>Save</b>: tap SAVE, then a scene key. <b>Delete</b>: tap DEL, then a scene. <b>Copy</b>: tap COPY, the scene to copy, then where it goes. Tap the lit key again to cancel.</li>
+<li><b>Recall</b>: tap a scene. It lands at the next timing point like any other change.</li>
+<li><b>SCENE CV</b>: 1 semitone per scene, C4 = scene 1 up to D#5 = scene 16 (the same idea as GridDrums and GridKeys). Any quantised sequencer can play your arrangement.</li>
+<li><b>TRIG</b>: recalls the CV's scene. Without a CV cable, each trigger steps to the next stored scene. Without a TRIG cable, every change on the CV recalls.</li>
+</ul>
+<h2>Panel and menu</h2>
+<ul><li><b>FADE</b> (1–50 ms, default 5): how long a mute takes. A few ms stops clicks on audio; turn it right down for triggers and gates.</li>
+<li>The small light by each output is lit while that channel is heard.</li>
+<li>Right-click: pick the grid · <b>Clock input</b>: 16ths, 8ths, quarters or 24 PPQN · <b>Beats per bar</b>: 2–7 (for BAR and 2BAR) · <b>Clear all scenes</b>.</li></ul>
+<div class="tip"><b>Ideas.</b> (1) Build a track's sections as scenes 1–8, then sequence them from a slow sequencer into SCENE CV. (2) Put kick and bass on an A/B pair so dropping one brings in the other. (3) Use CUE to line up a big change during a fill, then LOCK on the bar. (4) Leave the outputs unpatched and use MIX as a quick submix of all 18.</div>
+<p style="color:#777;margin-top:4mm">Inspired by the NO BPM Mute Performer, written from scratch for Rack. Mutes, solos, links, scenes and settings are saved with the patch.</p>
+</body></html>

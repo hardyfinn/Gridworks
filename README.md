@@ -63,7 +63,15 @@ columns 11-15 for chord mode: 25 modifier pads (shape, extensions, inversion, vo
 10-slot chord memory, playable from the SLOT (1 semitone per slot) and PLAY inputs. Outputs: poly
 V/OCT + GATE, mono V/OCT + GATE with glide, TRIG. See `docs/GridKeys-Guide.pdf`.
 
+## GridMutes
+
+18 clocked performance mutes for audio, CV or triggers (inspired by the NO BPM Mute Performer,
+written from scratch). Grid: channels in columns 1-3, CUE LOCK SOLO A/B PAIR INV and ALL+ ALL-
+CLR SAVE DEL COPY in columns 5-6, signal activity mirrored in columns 8-10, 16 scenes and the
+NOW/BEAT/BAR/2BAR timing keys on the right. 18 mono ins/outs (unpatched outs sum into MIX),
+CLOCK, RESET, SCENE CV (1 semitone per scene) + TRIG, FADE 1-50 ms. See `docs/GridMutes-Guide.pdf`.
+
 ## Building
 
 Builds for Apple Silicon Macs run on GitHub Actions on every push (see `.github/workflows`).
-Panel: `python3 res/make_panel.py`. Logic tests: `g++ -std=c++11 -I src test/core_test.cpp -o core_test && ./core_test` and the same for `test/lc_test.cpp` and `test/gk_test.cpp`.
+Panel: `python3 res/make_panel.py`. Logic tests: `g++ -std=c++11 -I src test/core_test.cpp -o core_test && ./core_test` and the same for `test/lc_test.cpp`, `test/gk_test.cpp` and `test/gm_test.cpp`.
