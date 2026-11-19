@@ -139,6 +139,7 @@ struct GridKeysCore {
 	bool padUsed[NUM_PADS] = {};    // a note was played while the pad was held
 	bool memHeld[NUM_MEMKEYS] = {};
 	int copySrc = -1;
+	int memArm = -1;                // SAVE / DEL / COPY tapped, waiting for a slot (-1 = none)
 
 	// chord memory (exact notes, semitones from C4)
 	std::vector<int> mem[NUM_SLOTS];
@@ -411,18 +412,21 @@ struct GridKeysCore {
 		return -1;
 	}
 	void slotKey(int s, int x, int y) {
-		if (memHeld[M_SAVE]) {
+		// SAVE / DEL / COPY: tap the key, then tap a slot (works with a mouse too)
+		if (memArm == M_SAVE) {
 			if (!lastChord.empty()) { mem[s] = lastChord; selected = s; }
+			memArm = -1;
 			return;
 		}
-		if (memHeld[M_DEL]) {
+		if (memArm == M_DEL) {
 			mem[s].clear();
 			if (selected == s) selected = -1;
+			memArm = -1;
 			return;
 		}
-		if (memHeld[M_COPY]) {
+		if (memArm == M_COPY) {
 			if (copySrc < 0) { if (!mem[s].empty()) copySrc = s; }
-			else { mem[s] = mem[copySrc]; selected = s; copySrc = -1; }
+			else { mem[s] = mem[copySrc]; selected = s; copySrc = -1; memArm = -1; }
 			return;
 		}
 		markPadsUsed();
@@ -463,7 +467,10 @@ struct GridKeysCore {
 			}
 			else if (y == 5) {
 				memHeld[c] = down;
-				if (c == M_COPY && !down) copySrc = -1;
+				if (down && (c == M_SAVE || c == M_DEL || c == M_COPY)) {
+					memArm = (memArm == c) ? -1 : c;   // tap again to cancel
+					copySrc = -1;
+				}
 				if (down && (c == M_PREV || c == M_NEXT)) {
 					int s = stepSlot(c == M_NEXT ? 1 : -1);
 					if (s >= 0) {
@@ -563,7 +570,7 @@ struct GridKeysCore {
 			out[p / 5][10 + p % 5] = v;
 		}
 		for (int k = 0; k < NUM_MEMKEYS; k++)
-			out[5][10 + k] = (memHeld[k] || (k == M_COPY && copySrc >= 0)) ? 15 : 5;
+			out[5][10 + k] = (memHeld[k] || memArm == k) ? 15 : 5;
 		for (int s = 0; s < NUM_SLOTS; s++) {
 			int x = 10 + s % 5, y = 6 + s / 5;
 			uint8_t v = mem[s].empty() ? 1 : 6;

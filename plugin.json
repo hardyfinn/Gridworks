@@ -1,7 +1,7 @@
 {
   "slug": "Gridworks",
   "name": "Gridworks",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "license": "GPL-3.0-or-later",
   "brand": "Haer",
   "author": "Haer",
@@ -40,6 +40,16 @@
       "tags": [
         "Controller",
         "Polyphonic",
+        "Hardware clone"
+      ]
+    },
+    {
+      "slug": "GridMutes",
+      "name": "GridMutes",
+      "description": "18-channel clocked performance mutes for audio, CV or triggers, played from a monome grid: cue and lock, solo, A/B toggle pairs, stereo pairs, invert, 16 scenes with CV select, click-free fades, signal activity on the grid, submix of unpatched channels",
+      "tags": [
+        "Mixer",
+        "Utility",
         "Hardware clone"
       ]
     }

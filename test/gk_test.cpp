@@ -251,9 +251,10 @@ int main() {
 		// ---------- chord memory ----------
 		k.plays = 1;
 		std::vector<int> dm = play(1, 7);                // D F A
-		k.key(10, 5, true);                              // hold SAVE
-		k.key(12, 6, true); k.key(12, 6, false);         // slot 3
-		k.key(10, 5, false);
+		k.key(10, 5, true); k.key(10, 5, false);         // tap SAVE
+		CHECK(k.memArm == M_SAVE);
+		k.key(12, 6, true); k.key(12, 6, false);         // then tap slot 3
+		CHECK(k.memArm == -1);
 		CHECK(k.mem[2] == dm && k.selected == 2);
 		k.key(0, 7, true); k.key(0, 7, false);           // play C so lastChord changes
 		k.key(12, 6, true);                              // tap slot 3: plays Dm
@@ -261,15 +262,16 @@ int main() {
 		k.key(12, 6, false);
 		CHECK(!k.sounding(-10));
 		// copy slot 3 -> slot 7
-		k.key(12, 5, true);
+		k.key(12, 5, true); k.key(12, 5, false);         // tap COPY
 		k.key(12, 6, true); k.key(12, 6, false);
 		k.key(11, 7, true); k.key(11, 7, false);
-		k.key(12, 5, false);
 		CHECK(k.mem[6] == dm);
 		// delete slot 3
-		k.key(11, 5, true);
+		k.key(11, 5, true); k.key(11, 5, false);         // tap DEL
 		k.key(12, 6, true); k.key(12, 6, false);
-		k.key(11, 5, false);
+		// tapping SAVE twice cancels
+		k.key(10, 5, true); k.key(10, 5, false); k.key(10, 5, true); k.key(10, 5, false);
+		CHECK(k.memArm == -1);
 		CHECK(k.mem[2].empty());
 		// NEXT from slot 7 wraps around to slot 7 (only one stored)
 		k.selected = -1;
