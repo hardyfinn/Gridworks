@@ -1,7 +1,7 @@
 {
   "slug": "Gridworks",
   "name": "Gridworks",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "license": "GPL-3.0-or-later",
   "brand": "Haer",
   "author": "Haer",
@@ -36,7 +36,7 @@
     {
       "slug": "GridKeys",
       "name": "GridKeys",
-      "description": "Push-style note keyboard on a monome grid: notes from the bottom-left, the same note in several places, In Key or Chromatic, 26 scales, chord keys, strum, latch, poly and mono outputs",
+      "description": "Push-style note keyboard on a monome grid: notes from the bottom-left, the same note in several places, In Key or Chromatic, 26 scales, chord pads (shape, extensions, inversions, voicing), a 10-slot chord memory playable by CV, strum, latch, poly and mono outputs",
       "tags": [
         "Controller",
         "Polyphonic",

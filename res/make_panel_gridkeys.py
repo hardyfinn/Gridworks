@@ -13,7 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FONT_BOLD = os.environ.get("PANEL_FONT_BOLD", "/usr/share/fonts/opentype/inter/Inter-Bold.otf")
 FONT_MED = os.environ.get("PANEL_FONT_MED", "/usr/share/fonts/opentype/inter/Inter-Medium.otf")
 
-W, H = 162.56, 128.5  # 32 HP
+W, H = 182.88, 128.5  # 36 HP
 
 BG = "#262329"
 SCREEN = "#121014"
@@ -28,11 +28,11 @@ CELL = 6.0
 GX0, GY0 = 31.0, 18.0
 STATUS_Y = 71.0
 KNOB_Y = 88.0
-X_ROOT, X_SCALE, X_OCT, X_WIDTH, X_ROW, X_GLIDE, X_STRUM = 11.0, 27.0, 43.0, 59.0, 75.0, 91.0, 107.0
-X_MODE, X_PLAYS = 125.0, 141.0
+X_ROOT, X_SCALE, X_OCT, X_WIDTH, X_ROW, X_GLIDE, X_STRUM = 12.0, 30.0, 48.0, 66.0, 84.0, 102.0, 120.0
+X_MODE, X_PLAYS = 140.0, 158.0
 JACK_Y = 112.0
-X_CHORD, X_SHOW, X_LATCH, X_GRIDLIGHT = 11.0, 25.0, 41.0, 54.0
-X_PVOCT, X_PGATE, X_MVOCT, X_MGATE, X_TRIG = 72.0, 87.0, 107.0, 122.0, 145.0
+X_CHORD, X_SHOW, X_SLOT, X_PLAY, X_LATCH, X_GRIDLIGHT = 11.0, 24.0, 41.0, 54.0, 70.0, 82.0
+X_PVOCT, X_PGATE, X_MVOCT, X_MGATE, X_TRIG = 98.0, 112.0, 130.0, 144.0, 165.0
 
 CONTROL = 3.2   # control label size (project standard)
 JACK = 2.9      # jack label size (project standard)
@@ -72,7 +72,9 @@ add(text("Push-style note grid", 33.0, 8.6, 2.4, FONT_MED, SOFT, anchor="start")
 add(text("GRIDWORKS", W - 6.0, 8.6, 2.6, FONT_MED, SOFT, anchor="end", spacing=0.12))
 
 add(f'<rect x="3.0" y="{GY0 - 7.0}" width="{W - 6.0}" height="{STATUS_Y + 3.5 - (GY0 - 7.0)}" rx="1.6" fill="{SCREEN}"/>')
-add(text("NOTES (WIDTH)", GX0 + 4 * CELL, GY0 - 1.6, JACK, FONT_BOLD, SOFT))
+add(text("NOTES (WIDTH 4-10)", GX0 + 5 * CELL, GY0 - 1.6, JACK, FONT_BOLD, SOFT))
+add(text("CHORDS", GX0 + 12.5 * CELL, GY0 - 1.6, JACK, FONT_BOLD, ROOT_COL))
+add(f'<line x1="{GX0 + 10 * CELL}" y1="{GY0}" x2="{GX0 + 10 * CELL}" y2="{GY0 + 8 * CELL}" stroke="{LINE}" stroke-width="0.3"/>')
 add(text("CTRL", GX0 + 15.5 * CELL, GY0 - 1.6, JACK, FONT_BOLD, SOFT))
 for r, s in enumerate(["OCT +", "OCT -", "LATCH", "KEY/CHR", "ROW", "PLAYS", "", "SUST"]):
     if s:
@@ -92,7 +94,7 @@ for dy, s_ in [(-3.4, "7TH"), (0.0, "TRIAD"), (3.4, "NOTE")]:
 add(text("0", X_STRUM - 5.4, KNOB_Y + 7.4, 2.4, FONT_MED, SOFT))
 add(text("100", X_STRUM + 5.4, KNOB_Y + 7.4, 2.4, FONT_MED, SOFT))
 add(text("4", X_WIDTH - 5.6, KNOB_Y + 7.4, 2.4, FONT_MED, SOFT))
-add(text("16", X_WIDTH + 5.6, KNOB_Y + 7.4, 2.4, FONT_MED, SOFT))
+add(text("10", X_WIDTH + 5.6, KNOB_Y + 7.4, 2.4, FONT_MED, SOFT))
 add(text("C", X_ROOT - 5.4, KNOB_Y + 7.4, 2.4, FONT_MED, SOFT))
 add(text("B", X_ROOT + 5.4, KNOB_Y + 7.4, 2.4, FONT_MED, SOFT))
 add(text("0", X_OCT - 5.4, KNOB_Y + 7.4, 2.4, FONT_MED, SOFT))
@@ -103,6 +105,10 @@ JL = JACK_Y - 6.4
 for x, s in [(X_CHORD, "CHORD"), (X_SHOW, "SHOW")]:
     add(text(s, x, JL, JACK))
 add(text("LATCH", X_LATCH, JL, CONTROL))
+add(f'<rect x="{X_SLOT - 7.0}" y="{JACK_Y - 13.0}" width="{X_PLAY - X_SLOT + 14.0}" height="19.0" rx="1.2" fill="none" stroke="{ROOT_COL}" stroke-width="0.35"/>')
+add(text("CHORD MEMORY", (X_SLOT + X_PLAY) / 2, JACK_Y - 10.2, 2.4, FONT_MED, ROOT_COL))
+for x, s in [(X_SLOT, "SLOT"), (X_PLAY, "PLAY")]:
+    add(text(s, x, JL, JACK))
 add(text("GRID", X_GRIDLIGHT, JL, 2.6, FONT_BOLD, SOFT))
 bx = X_PVOCT - 8.0
 add(f'<rect x="{bx}" y="{JACK_Y - 13.0}" width="{W - 3.0 - bx}" height="19.0" rx="1.2" fill="{OUT_BG}"/>')

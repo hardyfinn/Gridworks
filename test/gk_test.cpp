@@ -34,9 +34,9 @@ int main() {
 	g.rowMode = 3; g.width = 4;
 	CHECK(g.rowClamped());
 	CHECK(g.rowStep() == 4);
-	g.width = 16;
+	g.width = 16;                            // capped at 10
 	CHECK(!g.rowClamped());
-	CHECK(g.noteAt(15, 0, n));               // width 16: no control column
+	CHECK(g.noteAt(9, 0, n) && !g.noteAt(10, 0, n));
 	CHECK(noteAt(g, 0, 6) == 0);
 	// sequential
 	g.rowMode = 4; g.width = 8;
@@ -178,6 +178,133 @@ int main() {
 	g.levels(lv, true);
 	CHECK(lv[7][1] == 1);    // C# faint
 	CHECK(lv[3][15] == 15);
+
+	// ---------- chord pads ----------
+	{
+		GridKeysCore k;   // C major, C3 bottom-left
+		auto tap = [&](int p) { k.key(10 + p % 5, p / 5, true); k.key(10 + p % 5, p / 5, false); };
+		auto play = [&](int x, int y) { k.key(x, y, true); std::vector<int> c = k.lastChord; k.key(x, y, false); return c; };
+		std::vector<int> c = play(1, 7);                 // D3 alone
+		CHECK(c.size() == 1 && c[0] == -10);
+		tap(P_7);                                        // sticky 7: diatonic Dm7
+		c = play(1, 7);
+		CHECK((c == std::vector<int>{-10, -7, -3, 0}));
+		CHECK(k.padSticky[P_7]);
+		tap(P_MAJ);                                      // forced major: D F# A C
+		c = play(1, 7);
+		CHECK((c == std::vector<int>{-10, -6, -3, 0}));
+		tap(P_MIN);                                      // replaces MAJ in its group
+		CHECK(!k.padSticky[P_MAJ] && k.padSticky[P_MIN]);
+		tap(P_MAJ7);                                     // replaces 7: D F A C#
+		c = play(1, 7);
+		CHECK((c == std::vector<int>{-10, -7, -3, 1}));
+		tap(P_RST);
+		CHECK(!k.padSticky[P_MIN] && !k.padSticky[P_MAJ7]);
+		// hold a pad while playing = momentary
+		k.key(10 + P_SUS4 % 5, P_SUS4 / 5, true);
+		c = play(0, 7);                                  // C F G
+		CHECK((c == std::vector<int>{-12, -7, -5}));
+		k.key(10 + P_SUS4 % 5, P_SUS4 / 5, false);
+		CHECK(!k.padSticky[P_SUS4]);
+		c = play(0, 7);
+		CHECK(c.size() == 1);
+		// 9 brings the 7th: Cmaj9 in key = C E G B D
+		tap(P_9);
+		c = play(0, 7);
+		CHECK((c == std::vector<int>{-12, -8, -5, -1, 2}));
+		tap(P_RST);
+		// inversions and voicing on a C triad
+		k.plays = 1;
+		c = play(0, 7);
+		CHECK((c == std::vector<int>{-12, -8, -5}));
+		tap(P_INV1);
+		c = play(0, 7);
+		CHECK((c == std::vector<int>{-8, -5, 0}));
+		tap(P_INV2);
+		CHECK(!k.padSticky[P_INV1]);
+		c = play(0, 7);
+		CHECK((c == std::vector<int>{-5, 0, 4}));
+		tap(P_INV0);
+		CHECK(k.inversion() == 0);
+		tap(P_OPEN);                                     // C G E'
+		c = play(0, 7);
+		CHECK((c == std::vector<int>{-12, -5, 0 + 4 - 12 + 12}));
+		tap(P_OPEN);
+		tap(P_BASS);
+		c = play(0, 7);
+		CHECK((c == std::vector<int>{-24, -12, -8, -5}));
+		tap(P_BASS);
+		tap(P_TOP);
+		c = play(0, 7);
+		CHECK((c == std::vector<int>{-12, -8, 7}));
+		tap(P_TOP);
+		tap(P_PWR);
+		c = play(0, 7);
+		CHECK((c == std::vector<int>{-12, -5}));
+		tap(P_RST);
+		k.plays = 0;
+		// RND always gives more than a triad's root alone
+		tap(P_RND);
+		for (int i = 0; i < 20; i++) { c = play(0, 7); CHECK(c.size() >= 4); }
+		tap(P_RST);
+
+		// ---------- chord memory ----------
+		k.plays = 1;
+		std::vector<int> dm = play(1, 7);                // D F A
+		k.key(10, 5, true);                              // hold SAVE
+		k.key(12, 6, true); k.key(12, 6, false);         // slot 3
+		k.key(10, 5, false);
+		CHECK(k.mem[2] == dm && k.selected == 2);
+		k.key(0, 7, true); k.key(0, 7, false);           // play C so lastChord changes
+		k.key(12, 6, true);                              // tap slot 3: plays Dm
+		CHECK(k.sounding(-10) && k.sounding(-7) && k.sounding(-3));
+		k.key(12, 6, false);
+		CHECK(!k.sounding(-10));
+		// copy slot 3 -> slot 7
+		k.key(12, 5, true);
+		k.key(12, 6, true); k.key(12, 6, false);
+		k.key(11, 7, true); k.key(11, 7, false);
+		k.key(12, 5, false);
+		CHECK(k.mem[6] == dm);
+		// delete slot 3
+		k.key(11, 5, true);
+		k.key(12, 6, true); k.key(12, 6, false);
+		k.key(11, 5, false);
+		CHECK(k.mem[2].empty());
+		// NEXT from slot 7 wraps around to slot 7 (only one stored)
+		k.selected = -1;
+		k.key(14, 5, true);
+		CHECK(k.selected == 6 && k.sounding(-10));
+		k.key(14, 5, false);
+		CHECK(!k.sounding(-10) && !k.memHeld[M_NEXT]);
+		// empty slot plays nothing
+		k.key(10, 6, true);
+		CHECK(!k.monoNote(n));
+		k.key(10, 6, false);
+		// CV playing
+		k.mem[0] = {0, 4, 7};
+		k.cvPlay(0);
+		CHECK(k.sounding(0) && k.sounding(7) && k.cvSlot == 0);
+		k.cvPlay(6);
+		CHECK(!k.sounding(0) && k.sounding(-10));
+		k.cvPlay(-1);
+		CHECK(!k.sounding(-10));
+		// CV chords ignore latch when replaced
+		k.setLatch(true);
+		k.cvPlay(0); k.cvPlay(6);
+		CHECK(!k.sounding(0));
+		k.cvPlay(-1);
+		k.setLatch(false);
+		// LEDs
+		uint8_t l2[8][16];
+		k.levels(l2, false);
+		CHECK(l2[6][10] == 6);     // stored slot 1
+		CHECK(l2[7][11] == 10);    // selected slot 7
+		CHECK(l2[6][11] == 1);     // empty
+		CHECK(l2[3][10] == 7);     // INV0 shown as the default
+		CHECK(l2[0][10] == 3);
+		CHECK(l2[7][9] == 0);      // column 10 is beyond width 8
+	}
 
 	if (fails == 0) printf("all GridKeys tests passed\n");
 	return fails ? 1 : 0;
