@@ -75,3 +75,7 @@ CLOCK, RESET, SCENE CV (1 semitone per scene) + TRIG, FADE 1-50 ms. See `docs/Gr
 
 Builds for Apple Silicon Macs run on GitHub Actions on every push (see `.github/workflows`).
 Panel: `python3 res/make_panel.py`. Logic tests: `g++ -std=c++11 -I src test/core_test.cpp -o core_test && ./core_test` and the same for `test/lc_test.cpp`, `test/gk_test.cpp` and `test/gm_test.cpp`.
+
+## Licence
+
+MIT (see `LICENSE.txt`): you're free to use, change, port (VST/CLAP, other platforms, hardware) and share this code, as long as the copyright notice and licence text come along. Fonts on the panel (Inter, Climate Crisis) are under the SIL Open Font Licence.
